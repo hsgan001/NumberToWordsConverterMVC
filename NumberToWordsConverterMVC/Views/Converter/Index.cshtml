@@ -1,0 +1,74 @@
+﻿@model NumberConversionModel
+@{
+    ViewBag.Title = "Number to Words Converter";
+}
+
+<head>
+    <title>@ViewBag.Title</title>
+</head>
+
+<div class="card text-white bg-primary mb-3">
+    <div class="card-header"><h4>Number to Words Converter</h4></div>
+    <div class="card-body">
+        @using (Html.BeginForm("NumberToWords", "Converter", FormMethod.Post))
+        {
+            <div class="form-group">
+                <label for="number" class="custom-label">Enter a number : </label>
+                <input type="text" name="number" id="number" value="@Model.Number" data-toggle="tooltip" data-placement="" title="Number conversion only support until trillion and 2 decimal places">
+                <button type="submit" id="convertButton" class="btn btn-primary" disabled>Convert</button>
+
+                <div class="card text-white bg-danger mb-3" style="display: none;" id="errorMessage">
+                    <div class="card-header">Input number was out of range</div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.Words))
+                {
+                    if (Model.IsSuccess)
+                    {
+                        <div id="result" class="card text-white bg-success mb-3">
+                            <div class="result-header card-header">Converted words</div>
+                            <div class="card-text">@Model.Words</div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div id="result" class="card text-white bg-danger mb-3">
+                            <div class="result-header card-header">Failed to convert</div>
+                            <div class="card-text">@Model.Words</div>
+                        </div>
+                    }
+                }
+            </div>
+        }
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+
+            let numberInput = $('#number');
+            let convertButton = $('#convertButton');
+            let errorMessage = $('#errorMessage');
+            let result = $('#result');
+
+            numberInput.on('input', function () {
+                let input = $(this).val();
+                let regexPattern = /^(?!0*(\.0{1,2})?$)([0-9]\d{0,12}(\.\d{1,2})?|0\.\d{1,2})$/;
+                let isValid = regexPattern.test(input);
+
+                if (!isValid) {
+                    errorMessage.show();
+                    result.hide();
+                    convertButton.prop('disabled', true);
+                } else {
+                    errorMessage.hide();
+                    convertButton.prop('disabled', false);
+                }
+            });
+        });
+    </script>
+}
